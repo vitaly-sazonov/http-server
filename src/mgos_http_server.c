@@ -196,6 +196,16 @@ static void mgos_http_ev(struct mg_connection *c, int ev, void *p,
       }
       break;
     }
+    case MG_EV_HTTP_CHUNK: {
+      struct http_message *hm = (struct http_message *) p;
+      struct mg_str pattern = MG_MK_STR("**conf*.json|**rpc_*");
+      size_t matched = mg_match_prefix_n(pattern, hm->uri);
+      if (matched != 0) {
+          mg_http_send_error(c, 404, "Not Found");
+      }
+      (void) hm;
+      break;
+    }
     case MG_EV_HTTP_MULTIPART_REQUEST: {
       mg_http_send_error(c, 404, "Not Found");
       break;
